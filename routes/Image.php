@@ -38,3 +38,23 @@
 		});
 	});
 </script>
+
+<button class="btn">Click Me</button>
+
+<script>
+	$(document).ready(function() {
+		$("button.btn").on("click", function(e) {
+			AJAX("Image", "MergeImage", {
+				Base64: "j2k3hbnkjsdfh78923yr23rfdsf",
+				Width: 15,
+				Height: 20,
+				Tags: "bob,cat"
+			}, (e) => {
+				if(e !== null && e !== void 0) {
+					console.log(e);
+					// window.location.href = `/scene/1?uuid=${ $(this).closest("p").attr("uuid") }`;
+				}
+			});
+		});
+	});
+</script>

@@ -537,7 +537,7 @@ SQL
             foreach($data["Types"] as $i => $type) {
                 $sql->bindValue($i + 1, $data["Values"][$i], $type);
 			}
-			print_r($data);
+			// print_r($data);
 			$sql->execute();
             
             /*echo "<pre>";
