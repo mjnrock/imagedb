@@ -25,8 +25,8 @@ abstract class API {
     }
     
     public static function _constructor() {
-        self::$schema = "Storyline";
-        self::$DB = new StaxPax();
+        self::$schema = "ImageDB";
+        self::$DB = new FuzzyKnights();
         self::$DB->setSchema(API::$schema);
         self::$DB->setFetchAssoc();
         foreach(self::$DB->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA LIKE '" . API::$schema . "' ORDER BY TABLE_NAME") as $record) {
