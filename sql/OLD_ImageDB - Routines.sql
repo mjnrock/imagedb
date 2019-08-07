@@ -1,0 +1,66 @@
+USE FuzzyKnights
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF OBJECT_ID('ImageDB.MergeImage') IS NOT NULL DROP PROCEDURE ImageDB.MergeImage;
+GO
+
+CREATE PROCEDURE ImageDB.MergeImage
+	@Base64 VARBINARY(MAX),
+	@Width NVARCHAR(255) = NULL,
+	@Height NVARCHAR(255) = NULL,
+	@Tags NVARCHAR(255) = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+    MERGE INTO ImageDB.[Image] AS t
+	USING (
+		SELECT
+			@Base64
+	) as s ([Base64])
+		ON t.[Base64] = s.[Base64]
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.Width = CASE
+				WHEN @Width = 'NULL' THEN NULL
+				WHEN t.Width IS NULL AND @Width IS NULL THEN NULL
+				WHEN t.Width IS NULL AND @Width IS NOT NULL THEN CAST(@Width AS REAL)
+				WHEN t.Width IS NOT NULL AND @Width IS NULL THEN CAST(t.Width AS REAL)
+				WHEN t.Width IS NOT NULL AND @Width IS NOT NULL THEN CAST(@Width AS REAL)
+			END,
+			t.Height = CASE
+				WHEN @Height = 'NULL' THEN NULL
+				WHEN t.Height IS NULL AND @Height IS NULL THEN NULL
+				WHEN t.Height IS NULL AND @Height IS NOT NULL THEN CAST(@Height AS REAL)
+				WHEN t.Height IS NOT NULL AND @Height IS NULL THEN CAST(t.Height AS REAL)
+				WHEN t.Height IS NOT NULL AND @Height IS NOT NULL THEN CAST(@Height AS REAL)
+			END,
+			t.Tags = CASE
+				WHEN @Tags = 'NULL' THEN NULL
+				WHEN t.Tags IS NULL AND @Tags IS NULL THEN NULL
+				WHEN t.Tags IS NULL AND @Tags IS NOT NULL THEN CAST(@Tags AS NVARCHAR(255))
+				WHEN t.Tags IS NOT NULL AND @Tags IS NULL THEN CAST(t.Tags AS NVARCHAR(255))
+				WHEN t.Tags IS NOT NULL AND @Tags IS NOT NULL THEN CAST(@Tags AS NVARCHAR(255))
+			END
+	WHEN NOT MATCHED THEN
+		INSERT (
+			[Base64],
+			Width,
+			Height,
+			Tags
+		) VALUES (
+			@Base64,
+			@Width,
+			@Height,
+			CAST(@Tags AS NVARCHAR(255))
+		)
+	OUTPUT
+		$action,
+		Inserted.*;
+END
+GO
