@@ -45,7 +45,9 @@
 	$(document).ready(function() {
 		$("button.btn").on("click", function(e) {
 			AJAX("Image", "MergeImage", {
-				Base64: "j2k3hbnkjsdfh78923yr23rfdsf",
+				FilePath: "C:\\temp",
+				FileName: "name",
+				FileExtension: "png",
 				Width: 15,
 				Height: 20,
 				Tags: "bob,cat"

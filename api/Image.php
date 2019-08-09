@@ -13,13 +13,17 @@
 
 	function MergeImage($Payload) {
 		if(	
-			isset($Payload->Base64)
+			isset($Payload->FilePath)
+			&& isset($Payload->FileName)
+			&& isset($Payload->FileExtension)
 			&& isset($Payload->Width)
 			&& isset($Payload->Height)
 			&& isset($Payload->Tags)
 		) {
 			$Image = API::$DB->PDOStoredProcedure("MergeImage", [
-				[$Payload->Base64, PDO::PARAM_STR],
+				[$Payload->FilePath, PDO::PARAM_STR],
+				[$Payload->FileName, PDO::PARAM_STR],
+				[$Payload->FileExtension, PDO::PARAM_STR],
 				[$Payload->Width, PDO::PARAM_STR],
 				[$Payload->Height, PDO::PARAM_STR],
 				[$Payload->Tags, PDO::PARAM_STR]
