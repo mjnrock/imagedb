@@ -5,9 +5,10 @@
     $error = array();
     $extension = array("png", "gif", "jpeg", "jpg", "svg");
     foreach($_FILES["files"]["tmp_name"] as $key => $tmp_name) {
-        $file_name = $_FILES["files"]["name"][$key];
+        $file_name_ext = $_FILES["files"]["name"][$key];
         $file_tmp = $_FILES["files"]["tmp_name"][$key];
-        $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+        $ext = pathinfo($file_name_ext, PATHINFO_EXTENSION);
+        $file_name = pathinfo($_FILES["files"]["name"][$key], PATHINFO_FILENAME);
         $file_details = getimagesize($_FILES["files"]["tmp_name"][$key]);
 
         if(in_array($ext, $extension)) {
@@ -20,9 +21,9 @@
                 "Tags" => null
             ]);
             
-            move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], "{$file_name}");
+            move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], "{$file_name_ext}");
         } else {
-            array_push($error, "$file_name, ");
+            array_push($error, "$file_name_ext, ");
         }
     }
 
