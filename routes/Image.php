@@ -18,7 +18,17 @@
 </table>
 
 <?php foreach($Data as $Image): ?>
-    <img src="api/<?= "{$Image[ "FileName" ]}.{$Image[ "FileExtension" ]}"; ?>" alt="Image" />
+    <img
+        class="db-image"
+        src="api/<?= "{$Image[ "FileName" ]}.{$Image[ "FileExtension" ]}"; ?>"
+        alt="<?= $Image[ "FileName" ]; ?>"
+        uuid="<?= $Image[ "UUID" ]; ?>"
+    />
+    <ul class="db-image-tags">
+        <?php foreach(explode(",", $Image[ "Tags" ]) as $Tag): ?>
+            <li><?= $Tag; ?></li>
+        <?php endforeach; ?>
+    </ul>
 <?php endforeach; ?>
 
 <script>
@@ -35,7 +45,7 @@
 				{ data: "Tags" },
 				{ data: "UUID" }
 			]
-		});
+        });
 	});
 </script>
 

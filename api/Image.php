@@ -18,7 +18,8 @@
                 "FileExtension" => $ext,
                 "Width" => $file_details[0],
                 "Height" => $file_details[1],
-                "Tags" => null
+                "Tags" => $ext,
+                "UUID" => null
             ]);
             
             move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], "{$file_name_ext}");
@@ -27,13 +28,23 @@
         }
     }
 
-	function MergeImage($Payload) {
+	function MergeImage($Payload) {        
         $Image = API::$DB->PDOStoredProcedure("MergeImage", [
             [ isset($Payload[ "FilePath" ]) ? $Payload[ "FilePath" ] : "NULL", PDO::PARAM_STR ],
-            [ $Payload[ "FileName" ], PDO::PARAM_STR ],
-            [ $Payload[ "FileExtension" ], PDO::PARAM_STR ],
-            [ $Payload[ "Width" ], PDO::PARAM_STR ],
-            [ $Payload[ "Height" ], PDO::PARAM_STR ],
+            [ isset($Payload[ "FileName" ]) ? $Payload[ "FileName" ] : "NULL", PDO::PARAM_STR ],
+            [ isset($Payload[ "FileExtension" ]) ? $Payload[ "FileExtension" ] : "NULL", PDO::PARAM_STR ],
+            [ isset($Payload[ "Width" ]) ? $Payload[ "Width" ] : "NULL", PDO::PARAM_STR ],
+            [ isset($Payload[ "Height" ]) ? $Payload[ "Height" ] : "NULL", PDO::PARAM_STR ],
+            [ isset($Payload[ "Tags" ]) ? $Payload[ "Tags" ] : "NULL", PDO::PARAM_STR ],
+            [ isset($Payload[ "UUID" ]) ? $Payload[ "UUID" ] : "NULL", PDO::PARAM_STR ]
+        ]);
+
+        echo json_encode($Image);
+    }
+
+	function UpdateImageTags($Payload) {        
+        $Image = API::$DB->PDOStoredProcedure("UpdateImageTags", [
+            [ isset($Payload[ "UUID" ]) ? $Payload[ "UUID" ] : "NULL", PDO::PARAM_STR ],
             [ isset($Payload[ "Tags" ]) ? $Payload[ "Tags" ] : "NULL", PDO::PARAM_STR ]
         ]);
 
