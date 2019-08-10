@@ -27,18 +27,6 @@
         }
     }
 
-
-	// require_once "{$_SERVER["DOCUMENT_ROOT"]}/models/index.php";
-
-	// if(isset($_GET["Action"]) && isset($_GET["Payload"])) {
-	// 	$Payload = json_decode($_GET["Payload"]);
-
-	// 	if($_GET["Action"] === "MergeImage") {
-	// 		MergeImage($Payload);
-	// 		// print_r($Payload);
-	// 	}
-	// }
-
 	function MergeImage($Payload) {
         $Image = API::$DB->PDOStoredProcedure("MergeImage", [
             [ isset($Payload[ "FilePath" ]) ? $Payload[ "FilePath" ] : "NULL", PDO::PARAM_STR ],
@@ -50,26 +38,7 @@
         ]);
 
         echo json_encode($Image);
-	}
-
-// 	function UpdateDialogText($Payload) {
-// 		$Payload->Name = str_replace("'", "''", $Payload->Name);
-
-// 		$SQL = <<<SQL
-// 		EXEC Storyline.UpdateDialogText
-// 		SET
-// 			Name = '{$Payload->Name}',
-// 			ModifiedDateTime = GETDATE()
-// 		OUTPUT
-// 			Inserted.CardID,
-// 			Inserted.Name
-// 		WHERE
-// 			CardID = {$Payload->CardID}
-// SQL;
-// 		if(isset($Payload->CardID) && isset($Payload->Name)) {
-// 			$result = API::query($SQL);
-
-// 			echo json_encode($result);
-// 		}
-// 	}
+    }
+    
+    header("Location: /image");
 ?>
