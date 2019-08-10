@@ -1,4 +1,3 @@
-
 <?php
     require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
     
@@ -14,14 +13,12 @@
             cout($_FILES);
             if(!file_exists($file_name)) {
                 move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], $file_name);
-            }
-            else {
+            } else {
                 $filename = basename($file_name, $ext);
                 $newFileName = $filename.time() . "." . $ext;
                 move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], $newFileName);
             }
-        }
-        else {
+        } else {
             array_push($error, "$file_name, ");
         }
     }
