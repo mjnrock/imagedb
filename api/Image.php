@@ -12,14 +12,14 @@
 
         if(in_array($ext, $extension)) {
             cout($_FILES);
-            // if(!file_exists("photo_gallery/" . $txtGalleryName . "/" . $file_name)) {
-            //     move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], "photo_gallery/" . $txtGalleryName . "/" . $file_name);
-            // }
-            // else {
-            //     $filename = basename($file_name, $ext);
-            //     $newFileName = $filename.time() . "." . $ext;
-            //     move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], "photo_gallery/" . $txtGalleryName . "/" . $newFileName);
-            // }
+            if(!file_exists($file_name)) {
+                move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], $file_name);
+            }
+            else {
+                $filename = basename($file_name, $ext);
+                $newFileName = $filename.time() . "." . $ext;
+                move_uploaded_file($file_tmp = $_FILES["files"]["tmp_name"][$key], $newFileName);
+            }
         }
         else {
             array_push($error, "$file_name, ");
