@@ -47,10 +47,12 @@ SQL;
 
     // cout($fns);
     // cout($vars);
-    cout($class);
+    // cout($class);
 
     $model = new Model(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
-    cout(json_encode($model->Columns));
+
+    $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
+    cout($crud);
 
     class Model {
         protected $Database;
@@ -89,12 +91,16 @@ SQL;
         public function CRUD($action, $payload = null, $condition = null) {
             $params = [];
 
+            if(is_array($payload)) {
+                $payload = json_encode($payload);
+            }
             $cols = array_keys($payload);
 
             return $this->Database->PDOStoredProcedure("CRUD", [
+                [ $this->Table["Table"], PDO::PARAM_STR ],
                 [ $action, PDO::PARAM_INT ],
-                [ $payload, isset($payload) ? PDO::PARAM_STRING : PDO::PARAM_NULL ],
-                [ $condition, isset($condition) ? PDO::PARAM_STRING : PDO::PARAM_NULL ]
+                [ $payload, isset($payload) ? PDO::PARAM_STR : PDO::PARAM_NULL ],
+                [ $condition, isset($condition) ? PDO::PARAM_STR : PDO::PARAM_NULL ]
             ], $this->Table["Schema"]);
         }
 

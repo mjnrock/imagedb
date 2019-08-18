@@ -519,7 +519,7 @@ SQL
             
             return $results;
         }        
-        public function PDOStoredProcedure($name, $params, $schema = null) {            
+        public function PDOStoredProcedure($name, $params, $schema = null) {
             $data = [
                 "Values" => [],
                 "Types" => [],
@@ -531,7 +531,7 @@ SQL
                 array_push($data["Params"], "?");
             }
             $query = "EXEC [" . (is_null($schema) ? $this->getSchema() : $schema) . "].[{$name}] " . (implode(",", $data["Params"]));
-                     
+
             $this->open();
             $sql = $this->conn->prepare($query);
             foreach($data["Types"] as $i => $type) {
