@@ -43,22 +43,27 @@ SQL;
 \t}\n\n";
     }
 
-    $class = "class {$Table["Table"]} extends Model {\n" . join("\n", $vars) . "\n\n" . join("\n", $fns) . "}";
+    //TODO Iterate through all the Tables under the Schema |=> Create <FlyweightModel>.php file for each Table |=> Save to Project's File System
+    $class = "class {$Table["Table"]} {\n"
+        . join("\n", $vars)
+        . "\n\n"
+        . join("\n", $fns)
+    . "}";
 
     // cout($fns);
     // cout($vars);
     // cout($class);
 
-    $model = new Model(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
+    $model = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
 
     $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
     cout($crud);
     $fetch = $model->Fetch(2);
     cout($fetch);
-    $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D");
+    $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D", true);
     cout($fetch);
 
-    class Model {
+    class TableConnector {
         protected $Database;
         protected $Table = [
             "Catalog" => "FuzzyKnights",
@@ -92,7 +97,7 @@ SQL;
             } catch (Exception $e) {}
         }
 
-        public function CRUD($action, $payload = null, $condition = null) {
+        public function CRUD($action, $payload = null, $condition = null, $asJSON = false) {
             $params = [];
 
             if(is_array($payload)) {
@@ -100,16 +105,20 @@ SQL;
             }
             $cols = array_keys($payload);
 
-            return $this->Database->PDOStoredProcedure("CRUD", [
+            $results = $this->Database->PDOStoredProcedure("CRUD", [
                 [ $this->Table["Table"], PDO::PARAM_STR ],
                 [ $action, PDO::PARAM_INT ],
                 [ $payload, isset($payload) ? PDO::PARAM_STR : PDO::PARAM_NULL ],
                 [ $condition, isset($condition) ? PDO::PARAM_STR : PDO::PARAM_NULL ]
             ], $this->Table["Schema"]);
+
+            return $asJSON ? json_encode($results) : $results;
         }
 
-        public function Fetch($input) {
-            return $this->Database->TVF("Get" . $this->Table["Table"], [ $input ]);
+        public function Fetch($input, $asJSON = false) {
+            $results = $this->Database->TVF("Get" . $this->Table["Table"], [ $input ]);
+
+            return $asJSON ? json_encode($results) : $results;
         }
 
         public function MetaQuery() {
