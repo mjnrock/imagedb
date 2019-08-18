@@ -50,7 +50,7 @@ SQL;
     cout($class);
 
     $model = new Model(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
-    cout($model->Columns);
+    cout(json_encode($model->Columns));
 
     class Model {
         protected $Database;
@@ -72,11 +72,12 @@ SQL;
             foreach($this->Columns as $k => $Column) {
                 $this->Columns[$k]["meta"] = json_decode($this->Columns[$k]["meta"]);
 
-                foreach($this->Columns[$k]["meta"] as $flag => $value) {
-                    if(substr($flag, 0, 2) === "is") {
-                        $this->Columns[$k]["meta"]->$flag = !!$this->Columns[$k]["meta"]->$flag;
-                    }
-                }
+                //? Convert SQL BIT into true Boolean values
+                // foreach($this->Columns[$k]["meta"] as $flag => $value) {
+                //     if(substr($flag, 0, 2) === "is") {
+                //         $this->Columns[$k]["meta"]->$flag = !!$this->Columns[$k]["meta"]->$flag;
+                //     }
+                // }
             }
         }        
         public function __destruct() {
