@@ -562,6 +562,7 @@ SQL
             if($orderby) {
                 $query .= " ORDER BY " . implode(",", $orderby);
             }
+            
             return $this->query($query);
         }
         

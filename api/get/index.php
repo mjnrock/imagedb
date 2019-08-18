@@ -53,6 +53,10 @@ SQL;
 
     $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
     cout($crud);
+    $fetch = $model->Fetch(2);
+    cout($fetch);
+    $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D");
+    cout($fetch);
 
     class Model {
         protected $Database;
@@ -102,6 +106,10 @@ SQL;
                 [ $payload, isset($payload) ? PDO::PARAM_STR : PDO::PARAM_NULL ],
                 [ $condition, isset($condition) ? PDO::PARAM_STR : PDO::PARAM_NULL ]
             ], $this->Table["Schema"]);
+        }
+
+        public function Fetch($input) {
+            return $this->Database->TVF("Get" . $this->Table["Table"], [ $input ]);
         }
 
         public function MetaQuery() {
