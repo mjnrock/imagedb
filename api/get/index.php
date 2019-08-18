@@ -30,39 +30,96 @@ SQL;
 
     $TableData = API::query($SQL);
     $vars = [];
+    $fns = [];
     foreach($TableData as $Column) {
         $vars[] = "\tpublic $" . $Column["name"] . ";";
+        $fns[] = "\tpublic function Get" . $Column["name"] . "() {
+\t\treturn \$this->" . $Column["name"] . ";
+\t}\n";
+        $fns[] = "\tpublic function Set" . $Column["name"] . "(value) {
+\t\t\$this->" . $Column["name"] . " = value;
+        
+\t\treturn \$this;
+\t}\n\n";
     }
 
-    $class = "class {$Table["Table"]} extends Model {\n" . join("\n", $vars) . "\n}";
+    $class = "class {$Table["Table"]} extends Model {\n" . join("\n", $vars) . "\n\n" . join("\n", $fns) . "}";
 
-    cout($vars);
+    // cout($fns);
+    // cout($vars);
     cout($class);
 
-    // class Model {
-    //     protected $info = Array(
-    //         "driver" => "sqlsrv",
-    //         "server" => "",
-    //         "database" => "",
-    //         "schema" => "",
-    //         "table" => "",
-    //         "user" => "",
-    //         "password" => "",
-    //     );
+    $model = new Model(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
+    cout($model->Columns);
 
-    //     public function __construct($driver, $server, $database, $user, $password) {
-    //         $this->info["driver"] = $driver;
-    //         $this->info["server"] = $server;
-    //         $this->info["database"] = $database;
-    //         $this->info["user"] = $user;
-    //         $this->info["password"] = $password;
-    //     }        
-    //     public function __destruct() {
-    //         try {
-    //             $this->close();
-    //         } catch (Exception $e) {}
-    //     }
-    // }
+    class Model {
+        protected $Database;
+        protected $Table = [
+            "Catalog" => "FuzzyKnights",
+            "Schema" => "ImageDB",
+            "Table" => "Camera"
+        ];
+        public $Columns = [];
+
+        public function __construct(&$database, $catalog, $schema, $table) {
+            $this->Database = $database;
+            $this->Table["Catalog"] = $catalog;
+            $this->Table["Schema"] = $schema;
+            $this->Table["Table"] = $table;
+
+            $this->Columns = $this->Database->query($this->MetaQuery());
+
+            foreach($this->Columns as $k => $Column) {
+                $this->Columns[$k]["meta"] = json_decode($this->Columns[$k]["meta"]);
+
+                foreach($this->Columns[$k]["meta"] as $flag => $value) {
+                    if(substr($flag, 0, 2) === "is") {
+                        $this->Columns[$k]["meta"]->$flag = !!$this->Columns[$k]["meta"]->$flag;
+                    }
+                }
+            }
+        }        
+        public function __destruct() {
+            try {
+                $this->close();
+            } catch (Exception $e) {}
+        }
+
+        public function CRUD($action, $payload, $condition) {
+            $params = [];
+
+
+            return $this->Database->PDOStoredProcedure("CRUD", $params, $this->Table["Schema"]);
+        }
+
+        public function MetaQuery() {
+            return <<<SQL
+SELECT
+    c.DATA_TYPE AS 'type',
+    c.COLUMN_NAME AS name,
+    c.ORDINAL_POSITION AS ordinality,
+    CONCAT(
+        '{',
+            '"precision": ', COALESCE(CAST(c.CHARACTER_MAXIMUM_LENGTH AS VARCHAR), CAST(c.NUMERIC_PRECISION AS VARCHAR), 'null'), ', ',
+            '"scale": ', COALESCE(CAST(c.NUMERIC_SCALE AS VARCHAR), 'null'), ',' ,
+            '"isUnicode": ', CASE WHEN c.CHARACTER_SET_NAME = 'UNICODE' THEN 1 ELSE 0 END, ',' ,
+            '"isString": ', CASE WHEN c.CHARACTER_SET_NAME IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isNumber": ', CASE WHEN c.NUMERIC_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isDatetime": ', CASE WHEN c.DATETIME_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isBoolean": ', CASE WHEN c.DATA_TYPE = 'bit' THEN 1 ELSE 0 END,
+        '}'
+    ) AS meta
+FROM
+    INFORMATION_SCHEMA.COLUMNS c
+WHERE
+    c.TABLE_CATALOG = '{$this->Table["Catalog"]}'
+    AND c.TABLE_SCHEMA = '{$this->Table["Schema"]}'
+    AND c.TABLE_NAME = '{$this->Table["Table"]}'
+ORDER BY
+    ordinality
+SQL;
+        }
+    }
 
 
 
