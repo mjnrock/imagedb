@@ -79,7 +79,7 @@ SQL;
                 //     }
                 // }
             }
-        }        
+        }
         public function __destruct() {
             try {
                 $this->close();
