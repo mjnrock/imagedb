@@ -86,11 +86,16 @@ SQL;
             } catch (Exception $e) {}
         }
 
-        public function CRUD($action, $payload, $condition) {
+        public function CRUD($action, $payload = null, $condition = null) {
             $params = [];
 
+            $cols = array_keys($payload);
 
-            return $this->Database->PDOStoredProcedure("CRUD", $params, $this->Table["Schema"]);
+            return $this->Database->PDOStoredProcedure("CRUD", [
+                [ $action, PDO::PARAM_INT ],
+                [ $payload, isset($payload) ? PDO::PARAM_STRING : PDO::PARAM_NULL ],
+                [ $condition, isset($condition) ? PDO::PARAM_STRING : PDO::PARAM_NULL ]
+            ], $this->Table["Schema"]);
         }
 
         public function MetaQuery() {
