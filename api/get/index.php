@@ -89,11 +89,32 @@ SQL;
             . "\n" . $fnUpdate
             . "\n}";
 
-        cout($class);
+        // cout($class);
     }
 
 
-
+    //TODO Make table classes extends Model
+    class Model {
+        public function Select($arr = []) {
+            $vals = [];
+    
+            foreach($arr as $col) {
+                $vals[$col] = $this->$col;
+            }
+    
+            return $this;
+        }
+    
+        public function Update($arr = []) {
+            $keys = array_keys($arr);
+    
+            foreach($keys as $key) {
+                $this->$key = $arr[$key];
+            }
+    
+            return $this;
+        }
+    }
 
     //? Struct testing alongside dynamic variables
     // class Animation {
@@ -110,10 +131,25 @@ SQL;
     //         $keys = array_keys($arr);
     
     //         foreach($keys as $key) {
-    //             ${"this"}->$key = $arr[$key];
+    //             $this->$key = $arr[$key];
     //         }
     
     //         return $this;
+    //     }
+
+        
+    //     public function Select($arr = []) {
+    //         if(count($arr) === 0) {
+    //             return $this;
+    //         }
+
+    //         $vals = [];
+    
+    //         foreach($arr as $col) {
+    //             $vals[$col] = $this->$col;
+    //         }
+    
+    //         return $vals;
     //     }
     // }
 
@@ -123,7 +159,13 @@ SQL;
     //     "Name" => "bob"
     // ]);
     
-    // cout($ani);
+    // cout($ani->Select([
+    //     "Tags",
+    //     "Name"
+    // ]));
+    // cout($ani->Select());
+    
+    // // cout($ani);
 
 
 
