@@ -1,71 +1,146 @@
 <?php
     require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
-
-    $Table = [
-        "Catalog" => "FuzzyKnights",
-        "Schema" => "ImageDB",
-        "Table" => "Camera"
-    ];
+    
     $SQL = <<<SQL
 SELECT
-    c.DATA_TYPE AS 'type',
-    c.COLUMN_NAME AS name,
+    c.TABLE_NAME AS "table",
+    c.DATA_TYPE AS "type",
+    c.COLUMN_NAME AS "name",
     c.ORDINAL_POSITION AS ordinality,
     CONCAT(
         '{',
             '"precision": ', COALESCE(CAST(c.CHARACTER_MAXIMUM_LENGTH AS VARCHAR), CAST(c.NUMERIC_PRECISION AS VARCHAR), 'null'), ', ',
             '"scale": ', COALESCE(CAST(c.NUMERIC_SCALE AS VARCHAR), 'null'), ',' ,
-            '"isUnicode": ', CASE WHEN c.CHARACTER_SET_NAME = 'UNICODE' THEN 1 ELSE 0 END,
+            '"isUnicode": ', CASE WHEN c.CHARACTER_SET_NAME = 'UNICODE' THEN 1 ELSE 0 END, ',' ,
+            '"isString": ', CASE WHEN c.CHARACTER_SET_NAME IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isNumber": ', CASE WHEN c.NUMERIC_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isDatetime": ', CASE WHEN c.DATETIME_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
+            '"isBoolean": ', CASE WHEN c.DATA_TYPE = 'bit' THEN 1 ELSE 0 END,
         '}'
     ) AS meta
 FROM
     INFORMATION_SCHEMA.COLUMNS c
 WHERE
-    c.TABLE_CATALOG = '{$Table["Catalog"]}'
-    AND c.TABLE_SCHEMA = '{$Table["Schema"]}'
-    AND c.TABLE_NAME = '{$Table["Table"]}'
+    c.TABLE_CATALOG = 'FuzzyKnights'
+    AND c.TABLE_SCHEMA = 'ImageDB'
 ORDER BY
+    "table",
     ordinality
 SQL;
 
     $TableData = API::query($SQL);
-    $vars = [];
-    $fns = [];
-    foreach($TableData as $Column) {
-        $vars[] = "\tpublic $" . $Column["name"] . ";";
-        $fns[] = "\tpublic function Get" . $Column["name"] . "() {
-\t\treturn \$this->" . $Column["name"] . ";
-\t}\n";
-        $fns[] = "\tpublic function Set" . $Column["name"] . "(value) {
-\t\t\$this->" . $Column["name"] . " = value;
+    $SchemaTables = [];
+
+    foreach($TableData as $Record) {
+        if(!isset($SchemaTables[$Record["table"]])) {
+            $SchemaTables[$Record["table"]] = [];
+        }
         
-\t\treturn \$this;
-\t}\n\n";
+        $SchemaTables[$Record["table"]][] = $Record["name"];
     }
 
-    //TODO Iterate through all the Tables under the Schema |=> Create <FlyweightModel>.php file for each Table |=> Save to Project's File System
-    $class = "class {$Table["Table"]} {\n"
-        . join("\n", $vars)
-        . "\n\n"
-        . join("\n", $fns)
-    . "}";
+    $SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
+
+//     $vars = [];
+//     $fns = [];
+//     foreach($TableData as $Column) {
+//         $vars[] = "\tpublic $" . $Column["name"] . ";";
+//         $fns[] = "\tpublic function Get" . $Column["name"] . "() {
+// \t\treturn \$this->" . $Column["name"] . ";
+// \t}\n";
+//         $fns[] = "\tpublic function Set" . $Column["name"] . "(value) {
+// \t\t\$this->" . $Column["name"] . " = value;
+        
+// \t\treturn \$this;
+// \t}\n\n";
+//     }
+
+//     //TODO Iterate through all the Tables under the Schema |=> Create <FlyweightModel>.php file for each Table |=> Save to Project's File System
+//     $class = "class {$Table["Table"]} {\n"
+//         . join("\n", $vars)
+//         . "\n\n"
+//         . join("\n", $fns)
+//     . "}";
 
     // cout($fns);
     // cout($vars);
     // cout($class);
 
-    $model = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", "Camera");
+    foreach($SchemaTables["TABLE_NAMES"] as $Table) {
+        ${"Model$Table"} = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", $Table);
 
-    $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
-    cout($crud);
-    $fetch = $model->Fetch(2);
-    cout($fetch);
-    $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D", true);
-    cout($fetch);
+        $columns = [];
+        foreach(${"Model$Table"}->Columns as $Column) {
+            $columns[] = "\tpublic $" . $Column["name"] . ";";
+        }
+
+        $fnUpdate = "\n\tpublic function Update(\$arr = []) {
+            \$keys = array_keys(\$arr);
+    
+            foreach(\$keys as \$key) {
+                \${\"this\"}->\$key = \$arr[\$key];
+            }
+    
+            return \$this;
+        }";
+
+        $class = "class " . ${"Model$Table"}->Table["Table"] . " {\n"
+            . join("\n", $columns)
+            . "\n" . $fnUpdate
+            . "\n}";
+
+        cout($class);
+    }
+
+
+
+
+    //? Struct testing alongside dynamic variables
+    // class Animation {
+    //     public $AnimationID;
+    //     public $EAnimationID;
+    //     public $SequenceID;
+    //     public $Name;
+    //     public $Description;
+    //     public $Value;
+    //     public $Tags = 8;
+    //     public $UUID;
+    
+    //     public function Update($arr = []) {
+    //         $keys = array_keys($arr);
+    
+    //         foreach($keys as $key) {
+    //             ${"this"}->$key = $arr[$key];
+    //         }
+    
+    //         return $this;
+    //     }
+    // }
+
+    // $ani = new Animation();
+    // $ani->Update([
+    //     "Tags" => "cat,dog",
+    //     "Name" => "bob"
+    // ]);
+    
+    // cout($ani);
+
+
+
+
+
+
+
+    // $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
+    // cout($crud);
+    // $fetch = $model->Fetch(2);
+    // cout($fetch);
+    // $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D", true);
+    // cout($fetch);
 
     class TableConnector {
         protected $Database;
-        protected $Table = [
+        public $Table = [
             "Catalog" => "FuzzyKnights",
             "Schema" => "ImageDB",
             "Table" => "Camera"
@@ -91,11 +166,7 @@ SQL;
                 // }
             }
         }
-        public function __destruct() {
-            try {
-                $this->close();
-            } catch (Exception $e) {}
-        }
+        public function __destruct() {}
 
         public function CRUD($action, $payload = null, $condition = null, $asJSON = false) {
             $params = [];
