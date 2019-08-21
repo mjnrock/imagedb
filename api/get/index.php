@@ -54,12 +54,15 @@ SQL;
     }
 
 	$SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
-	
+
 	$CameraFactory = (new ModelFactory("FuzzyKnights", "ImageDB", "Camera"))->Connect(API::$DB);
 	$models = $CameraFactory->CreateFromFetch([
-		3
-	], true);
-	cout($models);
+		2
+	], false);
+	// cout($models);
+
+	$thing = (new Camera())->SeedFromModel($models[2]);
+	cout($thing);
 
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
         ${"Model$Table"} = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", $Table);
@@ -87,99 +90,4 @@ SQL;
 
         cout("[INFO]: \"ImageDB/" . $Table . ".php\" was updated");
     }
-
-    //? Struct testing alongside dynamic variables
-    // class Animation {
-    //     public $AnimationID;
-    //     public $EAnimationID;
-    //     public $SequenceID;
-    //     public $Name;
-    //     public $Description;
-    //     public $Value;
-    //     public $Tags = 8;
-    //     public $UUID;
-    
-    //     public function Update($arr = []) {
-    //         $keys = array_keys($arr);
-    
-    //         foreach($keys as $key) {
-    //             $this->$key = $arr[$key];
-    //         }
-    
-    //         return $this;
-    //     }
-
-        
-    //     public function Select($arr = []) {
-    //         if(count($arr) === 0) {
-    //             return $this;
-    //         }
-
-    //         $vals = [];
-    
-    //         foreach($arr as $col) {
-    //             $vals[$col] = $this->$col;
-    //         }
-    
-    //         return $vals;
-    //     }
-    // }
-
-    // $ani = new Animation();
-    // $ani->Update([
-    //     "Tags" => "cat,dog",
-    //     "Name" => "bob"
-    // ]);
-    
-    // cout($ani->Select([
-    //     "Tags",
-    //     "Name"
-    // ]));
-    // cout($ani->Select());
-    
-    // // cout($ani);
-
-
-
-
-
-
-
-    // $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
-    // cout($crud);
-    // $fetch = $model->Fetch(2);
-    // cout($fetch);
-    // $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D", true);
-    // cout($fetch);
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    // if(isset($_GET["Endpoint"]) && isset($_GET["Payload"])) {
-    //     $msg = [
-    //         "ep" => $_GET["Endpoint"],
-    //         "data" => $_GET["Payload"]
-    //     ];
-
-    //     API::$DB->PDOStoredProcedure(
-    //         $msg["ep"],
-    //         $msg["data"],
-    //         "ImageDB"
-    //     );
-
-    //     API::$DB->TVF(
-    //         "Name",
-    //         "Params"
-    //     );
-    // }
 ?>

@@ -1,4 +1,13 @@
 <?php
+	//*	Debugging/Testing Code
+	//*	----------------------------	
+	// $CameraFactory = (new ModelFactory("FuzzyKnights", "ImageDB", "Camera"))->Connect(API::$DB);
+	// $models = $CameraFactory->CreateFromFetch([
+	// 	3
+	// ], true);
+	// cout($models);
+	// cout(json_encode($models));
+
 	class ModelFactory {
 		public $TableConnector;
         public $Table = [
@@ -29,16 +38,14 @@
 			foreach($results as $row) {
 				$col1Value = $row[$this->TableConnector->Columns[0]["name"]];
 
-				if($asJSON === true) {
-					$arr[$col1Value] = (new $this->Table["Table"]())
-						->SeedFromArray($row)
-						->ToJSON();
-				} else {
-					$arr[$col1Value] = (new $this->Table["Table"]())
-						->SeedFromArray($row);
-				}
+				$arr[$col1Value] = (new $this->Table["Table"]())
+					->SeedFromArray($row);
 			}
 			
+			if($asJSON === true) {
+				return json_encode($arr);
+			}
+
 			return $arr;
 		}
 		public function CreateFromFetch($params = null, $asJSON = false) {

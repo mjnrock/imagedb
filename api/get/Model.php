@@ -1,9 +1,9 @@
-<?php
+<?php	
 	abstract class Model {
 		public function ToJSON() {
 			return json_encode($this);
 		}
-		
+
 		public function Select($arr = []) {
 			$vals = [];
 
@@ -24,10 +24,19 @@
 			return $this;
 		}
 
-		public function SeedFromArray($arr = []) {
+		public function SeedFromArray($arr) {
 			foreach($arr as $key => $value) {
 				$this->$key = $value;
 			}
+
+			return $this;
+		}
+		public function SeedFromModel($model) {
+			cout($model);
+
+			foreach(get_object_vars($model) as $key => $value) {
+				$this->$key = $model->$key;
+			 }
 
 			return $this;
 		}

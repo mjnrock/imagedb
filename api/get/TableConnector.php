@@ -1,4 +1,13 @@
 <?php
+	//*	Debugging/Testing Code
+	//*	----------------------------
+    // $crud = $model->CRUD(1, null, "X = 99 AND Z = 87");
+    // cout($crud);
+    // $fetch = $model->Fetch(2);
+    // cout($fetch);
+    // $fetch = $model->Fetch("43A7EDE2-9233-4477-94D0-B7A67BBE1C4D", true);
+	// cout($fetch);
+	
 	class TableConnector {
         protected $Database;
         public $Table = [
