@@ -1,6 +1,7 @@
 <?php
     require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
-    
+	
+	//!	This code will generate .PHP classes that extend Model.php, which it expects to find at this same directory location
     $SQL = <<<SQL
 SELECT
     c.TABLE_NAME AS "table",
@@ -41,31 +42,6 @@ SQL;
 
     $SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
 
-//     $vars = [];
-//     $fns = [];
-//     foreach($TableData as $Column) {
-//         $vars[] = "\tpublic $" . $Column["name"] . ";";
-//         $fns[] = "\tpublic function Get" . $Column["name"] . "() {
-// \t\treturn \$this->" . $Column["name"] . ";
-// \t}\n";
-//         $fns[] = "\tpublic function Set" . $Column["name"] . "(value) {
-// \t\t\$this->" . $Column["name"] . " = value;
-        
-// \t\treturn \$this;
-// \t}\n\n";
-//     }
-
-//     //TODO Iterate through all the Tables under the Schema |=> Create <FlyweightModel>.php file for each Table |=> Save to Project's File System
-//     $class = "class {$Table["Table"]} {\n"
-//         . join("\n", $vars)
-//         . "\n\n"
-//         . join("\n", $fns)
-//     . "}";
-
-    // cout($fns);
-    // cout($vars);
-    // cout($class);
-
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
         ${"Model$Table"} = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", $Table);
 
@@ -84,36 +60,19 @@ SQL;
             return \$this;
         }";
 
-        $class = "class " . ${"Model$Table"}->Table["Table"] . " {\n"
+        $class = "class " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
             . join("\n", $columns)
             . "\n" . $fnUpdate
             . "\n}";
 
-        // cout($class);
-    }
+		if (!file_exists("ImageDB")) {
+			mkdir("ImageDB", 0777, true);
+		}
+		$file = fopen("ImageDB\\" . $Table . ".php", "w") or die("Unable to open file");
+		fwrite($file, "<?php\nrequire_once \"../Model.php\";\n\n" . $class . "\n?>");
+		fclose($file);
 
-
-    //TODO Make table classes extends Model
-    class Model {
-        public function Select($arr = []) {
-            $vals = [];
-    
-            foreach($arr as $col) {
-                $vals[$col] = $this->$col;
-            }
-    
-            return $this;
-        }
-    
-        public function Update($arr = []) {
-            $keys = array_keys($arr);
-    
-            foreach($keys as $key) {
-                $this->$key = $arr[$key];
-            }
-    
-            return $this;
-        }
+        cout("[INFO]: \"ImageDB/" . $Table . ".php\" was updated");
     }
 
     //? Struct testing alongside dynamic variables
