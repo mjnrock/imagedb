@@ -550,7 +550,7 @@ SQL
             return $results;
         }
         
-        public function TVF($name, $params, $orderby = null, $defaultSchema = true) {
+        public function TVF($name, $params = [], $orderby = null, $defaultSchema = true) {
             foreach($params as $i => $param) {
                 if(is_string($param)) {
                     $params[$i] = "'{$param}'";
@@ -561,7 +561,7 @@ SQL
             
             if($orderby) {
                 $query .= " ORDER BY " . implode(",", $orderby);
-            }
+			}
             
             return $this->query($query);
         }

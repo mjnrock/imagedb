@@ -29,6 +29,11 @@
         }
         public function __destruct() {}
 
+		/**
+		 * $action | INT | 0: CREATE, 1: READ, 2: UPDATE, 3: DELETE
+		 * $payload | JSON | { "key":value, ... } structure
+		 * $condition | STRING | The literal WHERE clause conditions in SQL syntax
+		 */
         public function CRUD($action, $payload = null, $condition = null, $asJSON = false) {
             $params = [];
 
@@ -47,8 +52,12 @@
             return $asJSON ? json_encode($results) : $results;
         }
 
-        public function Fetch($input, $asJSON = false) {
-            $results = $this->Database->TVF("Get" . $this->Table["Table"], [ $input ]);
+		/**
+		 * $params | ARRAY | Array of each parameter index fn order
+		 * $asJSON | BOOL | Return as PHP array or as JSON
+		 */
+        public function Fetch($params = [], $asJSON = false) {
+            $results = $this->Database->TVF("Get" . $this->Table["Table"], $params);
 
             return $asJSON ? json_encode($results) : $results;
         }
