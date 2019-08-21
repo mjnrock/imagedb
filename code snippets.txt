@@ -1,0 +1,31 @@
+<table id="table">
+	<thead>
+		<tr>
+			<?php foreach($Table::COLUMNS as $column): ?>
+				<th><?= $column; ?></th>
+			<?php endforeach; ?>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+</table>
+
+<script>
+	$(document).ready(function() {
+		$("#table").DataTable({
+			select: true,
+			data: <?= json_encode($Data); ?>,
+			columns: [
+				<?php foreach($Table::COLUMNS as $column): ?>
+					<?= "{ data: `$column` },"; ?>
+				<?php endforeach; ?>
+				{ data: "<button>Click ME!</button>" }
+			]
+		});
+	});
+</script>
+
+
+
+

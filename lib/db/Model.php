@@ -1,6 +1,6 @@
 <?php	
 	abstract class Model {
-        public $Table = [
+        public $Meta = [
             "Catalog" => null,
             "Schema" => null,
 			"Table" => null,
@@ -9,46 +9,46 @@
 
 		public function Catalog($catalog = null) {
 			if(isset($catalog)) {
-				$this->Table["Catalog"] = $catalog;
+				$this->Meta["Catalog"] = $catalog;
 
 				return $this;
 			}
 
-			return $this->Table["Catalog"];
+			return $this->Meta["Catalog"];
 		}
 		public function Schema($schema = null) {
 			if(isset($schema)) {
-				$this->Table["Schema"] = $schema;
+				$this->Meta["Schema"] = $schema;
 
 				return $this;
 			}
 
-			return $this->Table["Schema"];
+			return $this->Meta["Schema"];
 		}
 		public function Table($table = null) {
 			if(isset($table)) {
-				$this->Table["Table"] = $table;
+				$this->Meta["Table"] = $table;
 
 				return $this;
 			}
 
-			return $this->Table["Table"];
+			return $this->Meta["Table"];
 		}		
 		public function UUID($uuid = null) {
 			if(isset($uuid)) {
-				$this->Table["UUID"] = $uuid;
+				$this->Meta["UUID"] = $uuid;
 
 				return $this;
 			}
 
-			return $this->Table["UUID"];
+			return $this->Meta["UUID"];
 		}
 
 		public function Initialize($catalog = null, $schema = null, $table = null, $uuid = null) {
-			$this->Table["Catalog"] = $catalog;
-			$this->Table["Schema"] = $schema;
-			$this->Table["Table"] = $table;
-			$this->Table["UUID"] = $uuid;
+			$this->Meta["Catalog"] = $catalog;
+			$this->Meta["Schema"] = $schema;
+			$this->Meta["Table"] = $table;
+			$this->Meta["UUID"] = $uuid;
 		}
 		
 		public function ToJSON() {
