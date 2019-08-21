@@ -1,21 +1,15 @@
 <?php
-require_once "../Model.php";
+	require_once "../Model.php";
 
-class EAnimation extends Model {
-	public $EAnimationID;
-	public $Name;
-	public $Description;
-	public $Tags;
-	public $UUID;
+	class EAnimation extends Model {
+		public $EAnimationID;
+		public $Name;
+		public $Description;
+		public $Tags;
+		public $UUID;
 
-	public function Update($arr = []) {
-            $keys = array_keys($arr);
-    
-            foreach($keys as $key) {
-                ${"this"}->$key = $arr[$key];
-            }
-    
-            return $this;
-        }
-}
+		public function __constructor($catalog, $schema) {
+			parent::__construct($catalog, $schema, get_class($this));
+		}
+	}
 ?>

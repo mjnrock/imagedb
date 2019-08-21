@@ -1,24 +1,18 @@
 <?php
-require_once "../Model.php";
+	require_once "../Model.php";
 
-class Scene extends Model {
-	public $SceneID;
-	public $SequenceID;
-	public $CameraID;
-	public $TrackID;
-	public $ZIndex;
-	public $IsRequired;
-	public $Tags;
-	public $UUID;
+	class Scene extends Model {
+		public $SceneID;
+		public $SequenceID;
+		public $CameraID;
+		public $TrackID;
+		public $ZIndex;
+		public $IsRequired;
+		public $Tags;
+		public $UUID;
 
-	public function Update($arr = []) {
-            $keys = array_keys($arr);
-    
-            foreach($keys as $key) {
-                ${"this"}->$key = $arr[$key];
-            }
-    
-            return $this;
-        }
-}
+		public function __constructor($catalog, $schema) {
+			parent::__construct($catalog, $schema, get_class($this));
+		}
+	}
 ?>
