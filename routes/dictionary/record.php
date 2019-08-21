@@ -26,6 +26,8 @@
 		<button id="record-save" class="btn">Save</button>
 		<button id="record-cancel" class="btn">Cancel</button>
 	</form>
+
+	<a class="mt-4 button primary" href="/table?name=<?= $Table; ?>">Back to <?= $Table; ?></a>
 <?php else: ?>
 	<h3>"name", "uuid" parameters must be set</h3>
 <?php endif; ?>
