@@ -1,5 +1,5 @@
 <?php
-	require_once "{$_SERVER["DOCUMENT_ROOT"]}/routes/peripheral/header.php";
+	require_once "{$_SERVER["DOCUMENT_ROOT"]}/views/peripheral/header.php";
 	
 	Router::SetServer($_SERVER);
 
@@ -8,5 +8,5 @@
 	Router::QuickGet("/table", "dictionary/table");
 	Router::QuickGet("/record", "dictionary/record");
 
-	require_once "{$_SERVER["DOCUMENT_ROOT"]}/routes/peripheral/footer.php";
+	require_once "{$_SERVER["DOCUMENT_ROOT"]}/views/peripheral/footer.php";
 ?>

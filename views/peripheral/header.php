@@ -33,6 +33,6 @@
 		</script>
 	</head>
 	<body>
-		<?php require_once "{$_SERVER["DOCUMENT_ROOT"]}/routes/peripheral/navbar.php"; ?>
+		<?php require_once "{$_SERVER["DOCUMENT_ROOT"]}/views/peripheral/navbar.php"; ?>
 		
 		<div class="container">
