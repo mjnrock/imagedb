@@ -3,7 +3,7 @@
 		$Table = $_GET["name"];
 		${"Factory$Table"} = (new ModelFactory("FuzzyKnights", "ImageDB", $Table))->Connect(API::$DB);
 		$RawData = ${"Factory$Table"}->CreateFromCRUD(1);
-		$Data = json_encode(array_values($RawData));
+		$Data = array_values($RawData);
 	?>
 
 	<table id="table">
@@ -19,7 +19,7 @@
 	<script>
 		$(document).ready(function() {
 			$("#table").DataTable({
-				data: <?= $Data; ?>,
+				data: <?= json_encode($Data); ?>,
 				columns: [
 					<?php foreach($Table::COLUMNS as $column): ?>
 						<?= "{ data: `$column` },"; ?>
@@ -29,5 +29,5 @@
 		});
 	</script>
 <?php else: ?>
-	<h3>"name" parameter is not set</h3>
+	<h3>"name" parameter must be set</h3>
 <?php endif; ?>

@@ -6,5 +6,9 @@
 		public $ECategoryID;
 		public $ImageID;
 		public $UUID;
+
+		public function __construct($uuid = null) {
+			parent::Initialize("FuzzyKnights", "ImageDB", "ImageECategory", $uuid);
+		}
 	}
 ?>

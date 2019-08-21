@@ -37,7 +37,7 @@
 			foreach($results as $row) {
 				$col1Value = $row[$this->TableConnector->Columns[0]["name"]];
 
-				$arr[$col1Value] = (new $this->Table["Table"]())
+				$arr[$col1Value] = (new $this->Table["Table"](isset($row["UUID"]) ? $row["UUID"] : null))
 					->SeedFromArray($row);
 			}
 			

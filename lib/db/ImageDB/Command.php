@@ -5,5 +5,9 @@
 		public $CommandID;
 		public $Command;
 		public $UUID;
+
+		public function __construct($uuid = null) {
+			parent::Initialize("FuzzyKnights", "ImageDB", "Command", $uuid);
+		}
 	}
 ?>

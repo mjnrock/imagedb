@@ -10,5 +10,9 @@
 		public $IsRequired;
 		public $Tags;
 		public $UUID;
+
+		public function __construct($uuid = null) {
+			parent::Initialize("FuzzyKnights", "ImageDB", "Scene", $uuid);
+		}
 	}
 ?>

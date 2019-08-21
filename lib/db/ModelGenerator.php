@@ -1,5 +1,8 @@
 <?php
-    require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
+	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
+	
+	const CATALOG = "FuzzyKnights";
+	const SCHEMA = "ImageDB";
 	
 	//!	=========================================================================================================================
 	//!	This code will generate .PHP classes that extend Model.php, which it expects to find at this same directory location
@@ -25,13 +28,14 @@ SELECT
 FROM
     INFORMATION_SCHEMA.COLUMNS c
 WHERE
-    c.TABLE_CATALOG = 'FuzzyKnights'
-    AND c.TABLE_SCHEMA = 'ImageDB'
+    c.TABLE_CATALOG = '%s'
+    AND c.TABLE_SCHEMA = '%s'
 ORDER BY
     "table",
     ordinality
 SQL;
 
+	$SQL = sprintf($SQL, CATALOG, SCHEMA);	//* This replaces the "%s" in the $SQL HEREDOC
     $TableData = API::query($SQL);
     $SchemaTables = [];
 
@@ -46,7 +50,7 @@ SQL;
 	$SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
 
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
-        ${"Model$Table"} = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", $Table);
+        ${"Model$Table"} = new TableConnector(API::$DB, CATALOG, SCHEMA, $Table);
 
 		$variables = [];
 		$columns = [];
@@ -58,20 +62,20 @@ SQL;
 		$class = "\tclass " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
 			. "\t\tconst COLUMNS = [ " . join(", ", $columns) . " ];\n\n"
             . join("\n", $variables)
-		// 	. "\n
-		// public function __construct(\$catalog, \$schema) {
-		// 	parent::__construct(\$catalog, \$schema, get_class(\$this));
-		// }"
+			. "\n
+		public function __construct(\$uuid = null) {
+			parent::Initialize(\"" . CATALOG . "\", \"" . SCHEMA . "\", \"" . $Table . "\", \$uuid);
+		}"
             . "\n\t}";
 
-		if (!file_exists("ImageDB")) {
-			mkdir("ImageDB", 0777, true);
+		if (!file_exists(SCHEMA)) {
+			mkdir(SCHEMA, 0777, true);
 		}
-		$file = fopen("ImageDB\\" . $Table . ".php", "w") or die("Unable to open file");
+		$file = fopen(SCHEMA . "\\" . $Table . ".php", "w") or die("Unable to open file");
 		fwrite($file, "<?php\n" . $class . "\n?>");
 		// fwrite($file, "<?php\n\trequire_once \"../Model.php\";\n\n" . $class . "\n? >");
 		fclose($file);
 
-        cout("[INFO]: \"ImageDB/" . $Table . ".php\" was updated");
+        cout("[INFO]: \"" . SCHEMA . "/" . $Table . ".php\" was updated");
     }
 ?>
