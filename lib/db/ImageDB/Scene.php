@@ -1,5 +1,7 @@
 <?php
 	class Scene extends Model {
+		const COLUMNS = [ "SceneID", "SequenceID", "CameraID", "TrackID", "ZIndex", "IsRequired", "Tags", "UUID" ];
+
 		public $SceneID;
 		public $SequenceID;
 		public $CameraID;

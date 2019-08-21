@@ -1,5 +1,7 @@
 <?php
 	class Animation extends Model {
+		const COLUMNS = [ "AnimationID", "EAnimationID", "SequenceID", "Name", "Description", "Value", "Tags", "UUID" ];
+
 		public $AnimationID;
 		public $EAnimationID;
 		public $SequenceID;

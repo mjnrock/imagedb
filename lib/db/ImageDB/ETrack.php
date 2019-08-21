@@ -1,5 +1,7 @@
 <?php
 	class ETrack extends Model {
+		const COLUMNS = [ "ETrackID", "ESequenceID", "Name", "Description", "Tags", "UUID" ];
+
 		public $ETrackID;
 		public $ESequenceID;
 		public $Name;

@@ -6,7 +6,6 @@
 	// 	3
 	// ], true);
 	// cout($models);
-	// cout(json_encode($models));
 
 	class ModelFactory {
 		public $TableConnector;

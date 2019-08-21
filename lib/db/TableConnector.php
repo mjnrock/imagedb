@@ -44,12 +44,13 @@
 		 * $condition | STRING | The literal WHERE clause conditions in SQL syntax
 		 */
         public function CRUD($action, $payload = null, $condition = null, $asJSON = false) {
-            $params = [];
+			$params = [];
+			$cols = [];
 
             if(is_array($payload)) {
                 $payload = json_encode($payload);
+				$cols = array_keys($payload);
             }
-            $cols = array_keys($payload);
 
             $results = $this->Database->PDOStoredProcedure("CRUD", [
                 [ $this->Table["Table"], PDO::PARAM_STR ],

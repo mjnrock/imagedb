@@ -1,5 +1,7 @@
 <?php
 	class Image extends Model {
+		const COLUMNS = [ "ImageID", "FilePath", "FileName", "FileExtension", "Width", "Height", "Tags", "UUID" ];
+
 		public $ImageID;
 		public $FilePath;
 		public $FileName;

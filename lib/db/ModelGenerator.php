@@ -1,15 +1,5 @@
 <?php
     require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
-    require_once "TableConnector.php";
-    require_once "Model.php";
-	require_once "ModelFactory.php";
-	
-	foreach (scandir("ImageDB") as $filename) {
-		$path = "ImageDB" . '/' . $filename;
-		if (is_file($path)) {
-			require $path;
-		}
-	}
 	
 	//!	=========================================================================================================================
 	//!	This code will generate .PHP classes that extend Model.php, which it expects to find at this same directory location
@@ -55,25 +45,19 @@ SQL;
 
 	$SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
 
-	$CameraFactory = (new ModelFactory("FuzzyKnights", "ImageDB", "Camera"))->Connect(API::$DB);
-	$models = $CameraFactory->CreateFromFetch([
-		2
-	], false);
-	// cout($models);
-
-	$thing = (new Camera())->SeedFromModel($models[2]);
-	cout($thing);
-
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
         ${"Model$Table"} = new TableConnector(API::$DB, "FuzzyKnights", "ImageDB", $Table);
 
-        $columns = [];
+		$variables = [];
+		$columns = [];
         foreach(${"Model$Table"}->Columns as $Column) {
-            $columns[] = "\t\tpublic $" . $Column["name"] . ";";
+			$variables[] = "\t\tpublic $" . $Column["name"] . ";";
+			$columns[] = "\"{$Column["name"]}\"";
         }
 
 		$class = "\tclass " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
-            . join("\n", $columns)
+			. "\t\tconst COLUMNS = [ " . join(", ", $columns) . " ];\n\n"
+            . join("\n", $variables)
 		// 	. "\n
 		// public function __construct(\$catalog, \$schema) {
 		// 	parent::__construct(\$catalog, \$schema, get_class(\$this));
