@@ -68,9 +68,10 @@ SQL;
 		}"
             . "\n\t}";
 
-		if (!file_exists(SCHEMA)) {
+		if(!file_exists(SCHEMA)) {
 			mkdir(SCHEMA, 0777, true);
 		}
+
 		$file = fopen(SCHEMA . "\\" . $Table . ".php", "w") or die("Unable to open file");
 		fwrite($file, "<?php\n" . $class . "\n?>");
 		// fwrite($file, "<?php\n\trequire_once \"../Model.php\";\n\n" . $class . "\n? >");
