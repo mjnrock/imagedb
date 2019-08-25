@@ -72,8 +72,7 @@
 
 	<script>
 		$(document).ready(function() {
-			//TODO: ModelGenerator.php should also make ES6 JS Classes for use here
-			let data = {};	//TODO: Translate PHP data into JSON object/JS Model of Table
+			let data = {};
 
 			$("form input").on("change", function(e) {
 				let state = 1;

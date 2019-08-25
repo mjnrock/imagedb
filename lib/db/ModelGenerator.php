@@ -70,16 +70,16 @@ SQL;
 		}"
 			. "\n\t}";
 			
-		if(!file_exists(SCHEMA)) {
-			mkdir(SCHEMA, 0777, true);
+		if(!file_exists(SCHEMA . "\\php")) {
+			mkdir(SCHEMA . "\\php", 0777, true);
 		}
 
-		$file = fopen(SCHEMA . "\\" . $Table . ".php", "w") or die("Unable to open file");
+		$file = fopen(SCHEMA . "\\php" . "\\" . $Table . ".php", "w") or die("Unable to open file");
 		fwrite($file, "<?php\n" . $php . "\n?>");
 		// fwrite($file, "<?php\n\trequire_once \"../Model.php\";\n\n" . $php . "\n? >");
 		fclose($file);
 		
-        cout("[INFO]: \"" . SCHEMA . "/" . $Table . ".php\" was updated");
+        cout("[INFO]: \"" . SCHEMA . "/php/" . $Table . ".php\" was updated");
 		//*	---------------------------------------------------------------------
 
 
