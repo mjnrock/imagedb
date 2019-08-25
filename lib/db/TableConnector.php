@@ -82,6 +82,8 @@ SELECT
         '{',
             '"precision": ', COALESCE(CAST(c.CHARACTER_MAXIMUM_LENGTH AS VARCHAR), CAST(c.NUMERIC_PRECISION AS VARCHAR), 'null'), ', ',
             '"scale": ', COALESCE(CAST(c.NUMERIC_SCALE AS VARCHAR), 'null'), ',' ,
+            '"default": ', CASE WHEN c.COLUMN_DEFAULT IS NOT NULL THEN CONCAT('"', SUBSTRING(c.COLUMN_DEFAULT, 2, LEN(c.COLUMN_DEFAULT) - 2), '"') ELSE 'null' END, ',' ,
+            '"isNullable": ', CASE WHEN c.IS_NULLABLE = 'YES' THEN 1 ELSE 0 END, ',' ,
             '"isUnicode": ', CASE WHEN c.CHARACTER_SET_NAME = 'UNICODE' THEN 1 ELSE 0 END, ',' ,
             '"isString": ', CASE WHEN c.CHARACTER_SET_NAME IS NOT NULL THEN 1 ELSE 0 END, ',' ,
             '"isNumber": ', CASE WHEN c.NUMERIC_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
