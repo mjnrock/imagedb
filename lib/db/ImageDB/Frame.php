@@ -1,10 +1,10 @@
 <?php
 	class Frame extends Model {
-		const COLUMNS = [ "FrameID", "TrackID", "ECategoryID", "Duration", "Ordinality", "Tags", "UUID" ];
+		const COLUMNS = [ "FrameID", "TrackID", "EFrameID", "Duration", "Ordinality", "Tags", "UUID" ];
 
 		public $FrameID;
 		public $TrackID;
-		public $ECategoryID;
+		public $EFrameID;
 		public $Duration;
 		public $Ordinality;
 		public $Tags;

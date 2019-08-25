@@ -12,22 +12,29 @@ GO
 --	CREATE SCHEMA ImageDB
 --	GO
 
+
+
+IF OBJECT_ID('ImageDB.SceneDetail') IS NOT NULL DROP TABLE ImageDB.SceneDetail;
 IF OBJECT_ID('ImageDB.Scene') IS NOT NULL DROP TABLE ImageDB.Scene;
 IF OBJECT_ID('ImageDB.Camera') IS NOT NULL DROP TABLE ImageDB.Camera;
 
+IF OBJECT_ID('ImageDB.AnimationEEntity') IS NOT NULL DROP TABLE ImageDB.AnimationEEntity;
+IF OBJECT_ID('ImageDB.AnimationSequence') IS NOT NULL DROP TABLE ImageDB.AnimationSequence;
 IF OBJECT_ID('ImageDB.Animation') IS NOT NULL DROP TABLE ImageDB.Animation;
 
 IF OBJECT_ID('ImageDB.Frame') IS NOT NULL DROP TABLE ImageDB.Frame;
 IF OBJECT_ID('ImageDB.Track') IS NOT NULL DROP TABLE ImageDB.Track;
 IF OBJECT_ID('ImageDB.[Sequence]') IS NOT NULL DROP TABLE ImageDB.[Sequence];
 
-IF OBJECT_ID('ImageDB.ImageECategory') IS NOT NULL DROP TABLE ImageDB.ImageECategory;
+IF OBJECT_ID('ImageDB.ImageEEntity') IS NOT NULL DROP TABLE ImageDB.ImageEEntity;
+IF OBJECT_ID('ImageDB.ImageEFrame') IS NOT NULL DROP TABLE ImageDB.ImageEFrame;
 IF OBJECT_ID('ImageDB.[Image]') IS NOT NULL DROP TABLE ImageDB.[Image];
 
-IF OBJECT_ID('ImageDB.ECategory') IS NOT NULL DROP TABLE ImageDB.ECategory;
+IF OBJECT_ID('ImageDB.EFrame') IS NOT NULL DROP TABLE ImageDB.EFrame;
 IF OBJECT_ID('ImageDB.ETrack') IS NOT NULL DROP TABLE ImageDB.ETrack;
 IF OBJECT_ID('ImageDB.ESequence') IS NOT NULL DROP TABLE ImageDB.ESequence;
 IF OBJECT_ID('ImageDB.EAnimation') IS NOT NULL DROP TABLE ImageDB.EAnimation;
+IF OBJECT_ID('ImageDB.EEntity') IS NOT NULL DROP TABLE ImageDB.EEntity;
 
 IF OBJECT_ID('ImageDB.Command') IS NOT NULL DROP TABLE ImageDB.Command;
 GO
@@ -67,22 +74,21 @@ VALUES
 
 --	This is to be used as the mapper to allow for templatizing the animations
 --	(e.g. Raccoon, Body, Entity > Raccoon, etc.)
-CREATE TABLE ImageDB.ECategory (
-	ECategoryID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+CREATE TABLE ImageDB.EFrame (
+	EFrameID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	ETrackID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.ETrack (ETrackID),
 	
 	Name VARCHAR(255) NULL,
 	[Description] NVARCHAR(MAX) NULL,
-	ParentECategoryID INT NULL FOREIGN KEY REFERENCES ImageDB.ECategory (ECategoryID),	-- Allow for hierarchy relationships, as necessary
 	Tags NVARCHAR(255) NULL,
 
 	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 );
-INSERT INTO ImageDB.ECategory (Name, ParentECategoryID)
+DECLARE @ETrackEYES INT = (SELECT ETrackID FROM ImageDB.ETrack WHERE Name = 'EYES');
+INSERT INTO ImageDB.EFrame (Name, ETrackID)
 VALUES
-	('FuzzyKnights::Paco', NULL),
-	('Entity', 1),
-	('Raccoon', 2),
-	('Rabbit', 2);	-- etc.
+	('LOOK_LEFT', @ETrackEYES),
+	('LOOK_RIGHT', @ETrackEYES);
 
 CREATE TABLE ImageDB.EAnimation (
 	EAnimationID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -95,6 +101,7 @@ CREATE TABLE ImageDB.EAnimation (
 );
 INSERT INTO ImageDB.EAnimation (Name)
 VALUES
+	('SINGLE'),
 	('WEIGHTED_POOL'),
 	('SEQUENTIAL');
 
@@ -122,13 +129,13 @@ CREATE TABLE ImageDB.Track (
 	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 );
 
---	By adding "ECategory", there allows for a mapping table between Images and ECategory
+--	By adding "EFrame", there allows for a mapping table between Images and EFrame
 --	so that these can be templates and the query can subtitute between various images
 --	(e.g. Raccoon IDLE becomes just "IDLE", and any ESequence=ENTITY can be pulled)
 CREATE TABLE ImageDB.Frame (
 	FrameID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	TrackID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.Track (TrackID),
-	ECategoryID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.ECategory (ECategoryID),
+	EFrameID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.EFrame (EFrameID),
 
 	Duration REAL NULL,
 	Ordinality TINYINT NULL,
@@ -161,10 +168,21 @@ VALUES
 	('SOUTH_WEST', 225, '2D,yaw'),
 	('WEST', 270, '2D,yaw'),
 	('NORTH_WEST', 315, '2D,yaw');
-
+	
 CREATE TABLE ImageDB.Scene (
 	SceneID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	SequenceID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Sequence] (SequenceID),
+
+	Name VARCHAR(255) NULL,
+	[Description] NVARCHAR(MAX) NULL,
+	Tags NVARCHAR(255) NULL,
+
+	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+);
+
+CREATE TABLE ImageDB.SceneDetail (
+	SceneDetailID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	
+	SceneID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Scene] (SceneID),
 	CameraID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.Camera (CameraID),
 	TrackID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.Track (TrackID),
 	
@@ -190,10 +208,11 @@ CREATE TABLE ImageDB.[Image] (
 	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 );
 
-CREATE TABLE ImageDB.ImageECategory (
-	MappingID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,	
-	ECategoryID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.ECategory (ECategoryID),
+CREATE TABLE ImageDB.ImageEFrame (
+	MappingID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+
 	ImageID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Image] (ImageID),
+	EFrameID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.EFrame (EFrameID),
 
 	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 );
@@ -201,12 +220,63 @@ CREATE TABLE ImageDB.ImageECategory (
 CREATE TABLE ImageDB.Animation (
 	AnimationID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	EAnimationID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.EAnimation (EAnimationID),
-	SequenceID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Sequence] (SequenceID),
 	
 	Name VARCHAR(255) NULL,
 	[Description] NVARCHAR(MAX) NULL,
 	Value REAL NULL,		-- WEIGHTED_POOL: The chance of proccing, SEQUENTIAL: The ordinality, etc.
 	Tags NVARCHAR(255) NULL,
+
+	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+);
+
+CREATE TABLE ImageDB.AnimationSequence (
+	MappingID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+
+	AnimationID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.Animation (AnimationID),
+	SequenceID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Sequence] (SequenceID),
+	Ordinality TINYINT NULL,
+
+	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+);
+
+
+CREATE TABLE ImageDB.EEntity (
+	EEntityID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	
+	Name VARCHAR(255) NOT NULL UNIQUE,
+	[Description] NVARCHAR(MAX) NULL,
+	ParentEEntityID INT NULL FOREIGN KEY REFERENCES ImageDB.EEntity (EEntityID),
+	Tags NVARCHAR(255) NULL,
+
+	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+);
+INSERT INTO ImageDB.EEntity (Name, ParentEEntityID)
+VALUES
+	('FuzzyKnights', NULL),
+	('Paco', 1),
+	('Entity', 2),
+	('Animate', 3),
+	('Inanimate', 3),
+	('Creature', 4),
+	('Plant', 5),
+	('Rock', 5),
+	('Structure', 5),
+	('Raccoon', 6);
+
+CREATE TABLE ImageDB.AnimationEEntity (
+	MappingID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	
+	AnimationID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Animation] (AnimationID),
+	EEntityID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.EEntity (EEntityID),
+
+	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+);
+
+CREATE TABLE ImageDB.ImageEEntity (
+	MappingID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	
+	ImageID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.[Image] (ImageID),
+	EEntityID INT NOT NULL FOREIGN KEY REFERENCES ImageDB.EEntity (EEntityID),
 
 	UUID UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
 );
