@@ -48,7 +48,7 @@
 
 	<script>
 		$(document).ready(function() {
-			//TODO: ModelGenerator.php should also make ES6 JS Classes
+			//TODO: ModelGenerator.php should also make ES6 JS Classes for use here
 			let data = {};	//TODO: Translate PHP data into JSON object/JS Model of Table
 
 			$("#record-Save").on("click", function(e) {
