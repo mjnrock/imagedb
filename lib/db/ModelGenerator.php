@@ -52,6 +52,8 @@ SQL;
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
         ${"Model$Table"} = new TableConnector(API::$DB, CATALOG, SCHEMA, $Table);
 
+		//*	PHP File Creation
+		//*	---------------------------------------------------------------------
 		$variables = [];
 		$columns = [];
         foreach(${"Model$Table"}->Columns as $Column) {
@@ -59,24 +61,58 @@ SQL;
 			$columns[] = "\"{$Column["name"]}\"";
         }
 
-		$class = "\tclass " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
+		$php = "\tclass " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
 			. "\t\tconst COLUMNS = [ " . join(", ", $columns) . " ];\n\n"
             . join("\n", $variables)
 			. "\n
 		public function __construct(\$uuid = null) {
 			parent::Initialize(\"" . CATALOG . "\", \"" . SCHEMA . "\", \"" . $Table . "\", \$uuid);
 		}"
-            . "\n\t}";
-
+			. "\n\t}";
+			
 		if(!file_exists(SCHEMA)) {
 			mkdir(SCHEMA, 0777, true);
 		}
 
 		$file = fopen(SCHEMA . "\\" . $Table . ".php", "w") or die("Unable to open file");
-		fwrite($file, "<?php\n" . $class . "\n?>");
-		// fwrite($file, "<?php\n\trequire_once \"../Model.php\";\n\n" . $class . "\n? >");
+		fwrite($file, "<?php\n" . $php . "\n?>");
+		// fwrite($file, "<?php\n\trequire_once \"../Model.php\";\n\n" . $php . "\n? >");
+		fclose($file);
+		
+        cout("[INFO]: \"" . SCHEMA . "/" . $Table . ".php\" was updated");
+		//*	---------------------------------------------------------------------
+
+
+
+		//*	JS File Creation
+		//*	---------------------------------------------------------------------
+		$js = "class " . ${"Model$Table"}->Table["Table"] . " {\n"
+			. "\tconstructor(obj = {}) {\n";
+
+		foreach(${"Model$Table"}->Columns as $Column) {
+			$js .= "\t\tthis." . $Column["name"] . " = null;\n";
+		}
+			
+		$js .= "\n\t\tthis.Set(obj);\n"
+			. "\t}\n\n"
+			. "\tSet(obj = {}) {\n"
+			. "\t\tfor(let key in obj) {\n"
+			. "\t\t\tthis[ key ] = obj[ key ];\n"
+			. "\t\t}\n"
+			. "\n\t\treturn this;\n"
+			. "\t}\n"
+			. "}\n\n"
+			. "export default " . $Table . ";";
+
+		if(!file_exists(SCHEMA . "\\js")) {
+			mkdir(SCHEMA . "\\js", 0777, true);
+		}
+
+		$file = fopen(SCHEMA . "\\js\\" . $Table . ".js", "w") or die("Unable to open file");
+		fwrite($file, $js);
 		fclose($file);
 
-        cout("[INFO]: \"" . SCHEMA . "/" . $Table . ".php\" was updated");
+        cout("[INFO]: \"" . SCHEMA . "/js/" . $Table . ".js\" was updated");
+		//*	---------------------------------------------------------------------
     }
 ?>
