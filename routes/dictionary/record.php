@@ -35,7 +35,7 @@
 		<?php foreach(${"Factory$Table"}->TableConnector->Columns as $i => $column): ?>
 			<div class="mb-4 row text-center">
 				<div class="cell-2">
-					<span class="dict-input-label
+					<span class="
 						<?= $column["meta"]->isNullable ? "" : "text-bold"; ?>
 						<?= $column["meta"]->isString ? "fg-crimson" : null; ?>
 						<?= $column["meta"]->isNumber ? "fg-cobalt" : null; ?>
@@ -45,12 +45,11 @@
 				</div>
 				<input
 					<?= $i === 0 || $column["name"] === "UUID" ? "disabled" : null; ?>
-					type="<?= $column["meta"]->isString ? "text" : null; ?><?= $column["meta"]->isNumber ? "number" : null; ?><?= $column["meta"]->isBoolean ? "text" : null; ?><?= $column["meta"]->isDatetime ? "datetime" : null; ?>"
-					class="dict-input cell-8 text-center"
+					type="<?= $column["meta"]->isString ? "text" : ($column["meta"]->isNumber ? "number" : ($column["meta"]->isBoolean ? "text" : ($column["meta"]->isDatetime ? "datetime" : "text"))); ?>"
+					class="cell-8 text-center"
 					name=<?= $column["name"]; ?>
 					value="<?= $Data[0]->$column["name"]; ?>"
 					state="-1"
-					<?= $column["meta"]->isNullable ? null : "x-not-null"; ?>
 					data-role="input"
 					data-default-value="<?= $Data[0]->$column["name"]; ?>"
 					data-on-clear-click="onClearClick"
@@ -72,6 +71,17 @@
 
 	<script>
 		$(document).ready(function() {
+			const COLUMNS = (() => {
+				let cols = <?= json_encode(${"Factory$Table"}->TableConnector->Columns); ?>,
+					res = {};
+
+				cols.forEach((v, i) => {
+					res[ cols[i]["name"] ] = cols[ i ];
+				});
+
+				return res;
+			})();
+			
 			let data = {};
 
 			$("form input").on("change", function(e) {
@@ -90,11 +100,16 @@
 				$("input[state=1]").each((i, v) => {
 					let [ name, value ] = [ $(v).attr("name"), $(v).val() ];
 
-					data[name] = value;
+					if(COLUMNS[ name ]["meta"]["isString"] == 1) {
+						data[ name ] = `'${ value}'`;
+					} else {
+						data[ name ] = value;
+					}
 				});
 
-				//TODO: Send API call to CRUD the changes
-				console.log(data);
+				CRUD_AJAX(`<?= $Table; ?>`, 2, data, `UUID='<?= $UUID; ?>'`, (data) => {
+					location.reload();
+				});
 			});
 
 			$("#record-cancel").on("click", function(e) {

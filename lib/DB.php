@@ -540,9 +540,9 @@ SQL
 			// print_r($data);
 			$sql->execute();
             
-            /*echo "<pre>";
-            $sql->debugDumpParams();
-            echo "</pre>";*/
+            // echo "<pre>";
+            // $sql->debugDumpParams();
+            // echo "</pre>";
             
             $results = $sql->fetchAll($this->config["fetch"]);
             $this->close();
