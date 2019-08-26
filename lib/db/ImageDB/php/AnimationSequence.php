@@ -1,5 +1,6 @@
 <?php
-	class AnimationSequence extends Model {
+	namespace ImageDB;
+	class AnimationSequence extends \Model {
 		const COLUMNS = [ "MappingID", "AnimationID", "SequenceID", "Ordinality", "UUID" ];
 
 		public $MappingID;

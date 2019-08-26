@@ -1,5 +1,6 @@
 <?php
-	class Frame extends Model {
+	namespace ImageDB;
+	class Frame extends \Model {
 		const COLUMNS = [ "FrameID", "TrackID", "EFrameID", "Duration", "Ordinality", "Tags", "UUID" ];
 
 		public $FrameID;

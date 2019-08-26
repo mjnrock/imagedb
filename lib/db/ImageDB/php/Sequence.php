@@ -1,5 +1,6 @@
 <?php
-	class Sequence extends Model {
+	namespace ImageDB;
+	class Sequence extends \Model {
 		const COLUMNS = [ "SequenceID", "ESequenceID", "Name", "Description", "Tags", "UUID" ];
 
 		public $SequenceID;

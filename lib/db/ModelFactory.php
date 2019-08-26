@@ -22,7 +22,7 @@
 		}
 
 		public function Connect(&$db) {
-			$this->TableConnector = new TableConnector($db, $this->Table["Catalog"], $this->Table["Schema"], $this->Table["Table"]);
+			$this->TableConnector = new \TableConnector($db, $this->Table["Catalog"], $this->Table["Schema"], $this->Table["Table"]);
 
 			return $this;
 		}
@@ -37,7 +37,8 @@
 			foreach($results as $row) {
 				$col1Value = $row[$this->TableConnector->Columns[0]["name"]];
 
-				$arr[$col1Value] = (new $this->Table["Table"](isset($row["UUID"]) ? $row["UUID"] : null))
+				$clazz = "\\" . $this->Table["Schema"] . "\\" . $this->Table["Table"];
+				$arr[$col1Value] = (new $clazz(isset($row["UUID"]) ? $row["UUID"] : null))
 					->SeedFromArray($row);
 			}
 			

@@ -1,5 +1,6 @@
 <?php
-	class ImageEFrame extends Model {
+	namespace ImageDB;
+	class ImageEFrame extends \Model {
 		const COLUMNS = [ "MappingID", "ImageID", "EFrameID", "UUID" ];
 
 		public $MappingID;

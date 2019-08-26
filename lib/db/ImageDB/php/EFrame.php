@@ -1,5 +1,6 @@
 <?php
-	class EFrame extends Model {
+	namespace ImageDB;
+	class EFrame extends \Model {
 		const COLUMNS = [ "EFrameID", "ETrackID", "Name", "Description", "Tags", "UUID" ];
 
 		public $EFrameID;

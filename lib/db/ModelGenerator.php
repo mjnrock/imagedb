@@ -48,9 +48,11 @@ SQL;
     }
 
 	$SchemaTables["TABLE_NAMES"] = array_keys($SchemaTables);
+	$JSPackage = [];
 
     foreach($SchemaTables["TABLE_NAMES"] as $Table) {
-        ${"Model$Table"} = new TableConnector(API::$DB, CATALOG, SCHEMA, $Table);
+		${"Model$Table"} = new TableConnector(API::$DB, CATALOG, SCHEMA, $Table);
+		$JSPackage[] = "import " . $Table . " from \"./" . $Table . ".js\"";
 
 		//*	PHP File Creation
 		//*	---------------------------------------------------------------------
@@ -61,7 +63,8 @@ SQL;
 			$columns[] = "\"{$Column["name"]}\"";
         }
 
-		$php = "\tclass " . ${"Model$Table"}->Table["Table"] . " extends Model {\n"
+		$php = "\tnamespace " . SCHEMA . ";\n"
+			. "\tclass " . ${"Model$Table"}->Table["Table"] . " extends \Model {\n"
 			. "\t\tconst COLUMNS = [ " . join(", ", $columns) . " ];\n\n"
             . join("\n", $variables)
 			. "\n
@@ -114,5 +117,14 @@ SQL;
 
         cout("[INFO]: \"" . SCHEMA . "/js/" . $Table . ".js\" was updated");
 		//*	---------------------------------------------------------------------
-    }
+	}
+	
+	$JSPackage = join("\n", $JSPackage);
+	$JSPackage .= "\n\n"
+		. "export default {\n\t"
+		. join($SchemaTables["TABLE_NAMES"], ",\n\t")
+		. "\n};";
+
+	$file = fopen(SCHEMA . "\\js\\package.js", "w") or die("Unable to open file");
+	fwrite($file, $JSPackage);
 ?>

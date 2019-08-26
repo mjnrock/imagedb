@@ -1,5 +1,6 @@
 <?php
-	class Animation extends Model {
+	namespace ImageDB;
+	class Animation extends \Model {
 		const COLUMNS = [ "AnimationID", "EAnimationID", "Name", "Description", "Value", "Tags", "UUID" ];
 
 		public $AnimationID;

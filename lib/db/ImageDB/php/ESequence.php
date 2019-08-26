@@ -1,5 +1,6 @@
 <?php
-	class ESequence extends Model {
+	namespace ImageDB;
+	class ESequence extends \Model {
 		const COLUMNS = [ "ESequenceID", "Name", "Description", "Tags", "UUID" ];
 
 		public $ESequenceID;

@@ -1,5 +1,6 @@
 <?php
-	class ImageEEntity extends Model {
+	namespace ImageDB;
+	class ImageEEntity extends \Model {
 		const COLUMNS = [ "MappingID", "ImageID", "EEntityID", "UUID" ];
 
 		public $MappingID;

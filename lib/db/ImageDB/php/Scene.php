@@ -1,5 +1,6 @@
 <?php
-	class Scene extends Model {
+	namespace ImageDB;
+	class Scene extends \Model {
 		const COLUMNS = [ "SceneID", "Name", "Description", "Tags", "UUID" ];
 
 		public $SceneID;

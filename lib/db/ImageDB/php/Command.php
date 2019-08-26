@@ -1,5 +1,6 @@
 <?php
-	class Command extends Model {
+	namespace ImageDB;
+	class Command extends \Model {
 		const COLUMNS = [ "CommandID", "Command", "UUID" ];
 
 		public $CommandID;
