@@ -1,6 +1,8 @@
 <?php
 	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
 
+	//TODO: Make this class instantiable with static reference to instance of itself, instead of overt abstract class (e.g. Minecraft style GetInstance())
+
 abstract class API {
     public static $DB;
     public static $Tables = [];

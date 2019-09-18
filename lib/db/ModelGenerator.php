@@ -39,7 +39,7 @@ ORDER BY
 SQL;
 
 	$SQL = sprintf($SQL, CATALOG, SCHEMA);	//* This replaces the "%s" in the $SQL HEREDOC
-    $TableData = API::query($SQL);
+    $TableData = API::query($SQL);	//*	API has a DB connection hard-coded, and it must be changed to work on other DBs (extend DB.php)
     $SchemaTables = [];
 
     foreach($TableData as $Record) {
