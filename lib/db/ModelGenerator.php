@@ -7,7 +7,7 @@
 	//!	=========================================================================================================================
 	//!	This code will generate .PHP classes that extend Model.php, which it expects to find at this same directory location
 	//!	** In order to make this work for another DB, you will need to change hard-coded values in a couple files
-	//!	**	and create a subclass for DB connector for that DB
+	//!	**	and create a subclass for DB connector for that DB -- a VS Code search for "ImageDB"/"FuzzyKnights" will reveal candidate files
 	//TODO: Create a deployable script that will do all of this work dynamically
 	//!	=========================================================================================================================
 
