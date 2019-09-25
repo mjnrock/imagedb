@@ -1,13 +1,13 @@
 <?php
-	$Templates[$GLOBALS["Database"]["Database"]] = <<<PHP
-	require_once "./DB.php";
+	$Templates[$GLOBALS["Database"]["Catalog"]] = <<<PHP
+	require_once "{\$_SERVER["DOCUMENT_ROOT"]}/lib/DB.php";
 	
-	class {$GLOBALS["Database"]["Database"]} extends Database {
+	class {$GLOBALS["Database"]["Catalog"]} extends Database {
 		public function __construct() {
 			parent::__construct(
 				"{$GLOBALS["Database"]["Driver"]}",
 				"{$GLOBALS["Database"]["Server"]}",
-				"{$GLOBALS["Database"]["Database"]}",
+				"{$GLOBALS["Database"]["Catalog"]}",
 				"{$GLOBALS["Database"]["User"]}",
 				"{$GLOBALS["Database"]["Password"]}"
 			);

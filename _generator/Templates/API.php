@@ -1,6 +1,6 @@
 <?php
 	$Templates["API"] = <<<PHP
-	require_once "./{$GLOBALS["Database"]["Database"]}.php";
+	require_once "{\$_SERVER["DOCUMENT_ROOT"]}/lib/{$GLOBALS["Database"]["Catalog"]}.php";
 		
 	abstract class API {
 		public static \$DB;
@@ -9,7 +9,7 @@
 		
 		public static function _constructor() {
 			self::\$schema = "{$GLOBALS["Database"]["Schema"]}";
-			self::\$DB = new {$GLOBALS["Database"]["Database"]}();
+			self::\$DB = new {$GLOBALS["Database"]["Catalog"]}();
 			self::\$DB->setSchema(API::\$schema);
 			self::\$DB->setFetchAssoc();
 			foreach(self::\$DB->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA LIKE '" . API::\$schema . "' ORDER BY TABLE_NAME") as \$record) {

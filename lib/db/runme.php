@@ -5,33 +5,34 @@
 		"FileSystem" => [
 			// "Root" => "{\$_SERVER[\"DOCUMENT_ROOT\"]}"
 			"Root" => "",
-			"Destination" => "ImageDB",
-			"AddDocRoot" => true
+			"Destination" => "ImageDB"
 		],
 		"Database" => [
 			"Driver" => "sqlsrv",
 			"Server" => "localhost",
-			"Database" => "FuzzyKnights",
+			"Catalog" => "FuzzyKnights",
 			"Schema" => "ImageDB",
 			"User" => "fuzzyknights",
 			"Password" => "fuzzyknights"
 		]
 	];
-	$Root = $GLOBALS["FileSystem"]["AddDocRoot"] === true ? "{\$_SERVER[\"DOCUMENT_ROOT\"]}/" : "./";
 	
 	//	Create ./{Destination}/lib if it does not exist
-	if(!file_exists($Root . $GLOBALS["FileSystem"]["Destination"] . "\\lib\\")) {
-		mkdir($Root . $GLOBALS["FileSystem"]["Destination"] . "\\lib\\", 0777, true);
+	if(!file_exists($GLOBALS["FileSystem"]["Destination"] . "\\lib\\")) {
+		mkdir($GLOBALS["FileSystem"]["Destination"] . "\\lib\\", 0777, true);
 	}
 
 	//	Copy all ./Core/ files into ./{Destination}/lib
-	foreach(scandir($Root . "Core/") as $filename) {
-		$path = $Root . "Core/" . $filename;
+	foreach(scandir("./Core/") as $filename) {
+		$path = "./Core/" . $filename;
 		if(is_file($path)) {
-			copy($path, $Root . $GLOBALS["FileSystem"]["Destination"] . "\\lib\\" . $filename);
+			copy($path, $GLOBALS["FileSystem"]["Destination"] . "\\lib\\" . $filename);
 		}
 	}
 
 	//	Create database-specific files (e.g. API.php, FuzzyKnights.php, etc.)
 	require "DatabaseConnectors.php";
+
+	//	Create PHP and JS models from the database connection
+	require "ModelGenerator.php";
 ?>

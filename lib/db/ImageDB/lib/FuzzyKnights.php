@@ -1,5 +1,5 @@
 <?php
-	require_once "./DB.php";
+	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/DB.php";
 	
 	class FuzzyKnights extends Database {
 		public function __construct() {

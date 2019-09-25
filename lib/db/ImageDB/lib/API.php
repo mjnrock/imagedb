@@ -1,5 +1,5 @@
 <?php
-	require_once "./FuzzyKnights.php";
+	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/FuzzyKnights.php";
 		
 	abstract class API {
 		public static $DB;
