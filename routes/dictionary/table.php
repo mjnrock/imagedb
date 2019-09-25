@@ -6,9 +6,14 @@
 		$Data = array_values($RawData);
 	?>
 
+	<div class="row">
+		<a class="cell button primary" href="/record?name=<?= $Table; ?>">Insert New Record</a>
+	</div>
+	<br />
+
 	<div data-role="accordion" data-one-frame="true" data-show-active="true">
 		<div class="frame text-center">
-			<div class="heading">Column Definition</div>        
+			<div class="heading">Column Definition</div>
 			<div class="content">
 				<ul class="items-list grid">
 					<li>
@@ -80,6 +85,11 @@
 
 			$(".button-edit").on("click", function(e) {
 				location.href = "/record?name=<?= $Table; ?>&uuid=" + $(this).parent().parent().attr("uuid");
+			});
+			$(".button-delete").on("click", function(e) {
+				CRUD_AJAX(`<?= $Table; ?>`, 3, null, `UUID='${ $(this).parent().parent().attr("uuid") }'`, (data) => {
+					location.reload();
+				});
 			});
 		});
 	</script>

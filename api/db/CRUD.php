@@ -1,6 +1,7 @@
 <?php
 	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/index.php";
 	
+	// // print_r($_GET);
 	CRUD([
 		"TableName" => $_GET["TableName"],
 		"Action" => $_GET["Action"],
@@ -17,5 +18,7 @@
         ]);
 
         echo json_encode($ResultSet);
-    }
+	}
+	
+	// echo json_encode($_GET);
 ?>

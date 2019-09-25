@@ -75,8 +75,9 @@
         public function MetaQuery() {
             return <<<SQL
 SELECT
-    c.DATA_TYPE AS 'type',
-    c.COLUMN_NAME AS name,
+    c.TABLE_NAME AS "table",
+    c.DATA_TYPE AS "type",
+    c.COLUMN_NAME AS "name",
     c.ORDINAL_POSITION AS ordinality,
     CONCAT(
         '{',
@@ -88,11 +89,29 @@ SELECT
             '"isString": ', CASE WHEN c.CHARACTER_SET_NAME IS NOT NULL THEN 1 ELSE 0 END, ',' ,
             '"isNumber": ', CASE WHEN c.NUMERIC_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
             '"isDatetime": ', CASE WHEN c.DATETIME_PRECISION IS NOT NULL THEN 1 ELSE 0 END, ',' ,
-            '"isBoolean": ', CASE WHEN c.DATA_TYPE = 'bit' THEN 1 ELSE 0 END,
+            '"isBoolean": ', CASE WHEN c.DATA_TYPE = 'bit' THEN 1 ELSE 0 END, ',' ,
+            '"isUUID": ', CASE WHEN c.DATA_TYPE = 'uniqueidentifier' THEN 1 ELSE 0 END, ',' ,
+			'"isPrimaryKey": ', CASE WHEN pk.COLUMN_NAME IS NOT NULL THEN 1 ELSE 0 END,
         '}'
     ) AS meta
 FROM
     INFORMATION_SCHEMA.COLUMNS c
+	LEFT JOIN (
+		SELECT
+			ku.TABLE_CATALOG,
+			ku.TABLE_SCHEMA,
+			ku.TABLE_NAME,
+			ku.COLUMN_NAME
+		FROM
+			INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+			INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE ku
+				ON tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+				AND tc.CONSTRAINT_NAME = ku.CONSTRAINT_NAME
+	) pk
+		ON c.TABLE_CATALOG = pk.TABLE_CATALOG
+		AND c.TABLE_SCHEMA = pk.TABLE_SCHEMA
+		AND c.TABLE_NAME = pk.TABLE_NAME
+		AND c.COLUMN_NAME = pk.COLUMN_NAME
 WHERE
     c.TABLE_CATALOG = '{$this->Table["Catalog"]}'
     AND c.TABLE_SCHEMA = '{$this->Table["Schema"]}'
