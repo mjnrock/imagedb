@@ -1,6 +1,4 @@
 <?php
-	require_once "{$_SERVER["DOCUMENT_ROOT"]}/lib/Request.php";
-
 	abstract class Router {
 		public static $Server;
 		public static $LastRequest;
