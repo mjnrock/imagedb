@@ -7,6 +7,9 @@
 			<li>
 				<a href="/dictionary">Dictionary</a>
 			</li>
+			<li>
+				<a href="/sql">Execute SQL</a>
+			</li>
 		</ul>
 	</div>
 </nav>
