@@ -2,6 +2,14 @@
 <hr />
 <br />
 
+<div>
+	<div class="remark info">
+		<kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Execute query
+		<br />
+		<kbd>Ctrl</kbd> + <kbd>Delete</kbd> : Clear textarea
+	</div>
+</div>
+
 <link rel="stylesheet" href="/assets/codemirror/lib/codemirror.css" />
 <script src="/assets/codemirror/lib/codemirror.js"></script>
 <script src="/assets/codemirror/addon/edit/matchbrackets.js"></script>
@@ -13,19 +21,33 @@
 	.CodeMirror {
 		border-top: 1px solid black;
 		border-bottom: 1px solid black;
-}
+	}
 </style>
 
-<form>
+<div>
 	<textarea
 		id="code"
 		name="code"
 	></textarea>
 	
 	<div class="row mt-2">
-		<a class="cell button light" href="#">Execute</a>
+		<button id="execute-query" class="cell button light">Execute</button>
 	</div>
-</form>
+
+	<div
+		id="results-holder"
+		class="mt-2"
+	>
+		<code
+			id="results-text"
+		></code>
+
+		<table
+			id="results-table"
+		>
+		</table>
+	</div>
+</div>
 
 <script>
 	window.onload = function() {
@@ -42,11 +64,79 @@
 			lineNumbers: true,
 			matchBrackets : true,
 			autofocus: true,
-			extraKeys: {"Ctrl-Space": "autocomplete"},
-			hintOptions: {tables: {
-			users: ["name", "score", "birthDate"],
-			countries: ["name", "population", "size"]
-			}}
+			extraKeys: {
+				"Ctrl-Space": "autocomplete"
+			},
+			hintOptions: {
+				tables: {
+					users: ["name", "score", "birthDate"],
+					countries: ["name", "population", "size"]
+				}
+			}
 		});
 	};
+
+	$(document).ready(function() {
+		$("#results-text").hide();
+		$("#results-table").hide();
+
+		function resetTable() {
+			if($.fn.DataTable.isDataTable("#results-table")) {
+				$("#results-table").DataTable().destroy(true);
+				$("#results-holder").append("<table id='results-table'>");
+			}
+		}
+
+		function Execute() {
+			return IO_AJAX(window.editor.getValue(), (data) => {
+				resetTable();
+
+				try {
+					let json = JSON.parse(data),
+						columns = [],
+						rows = [];
+
+					if(Array.isArray(json)) {
+						let keys = Object.keys(json[0]);
+
+						columns = keys.map(k => ({
+							title: `${ k }`
+						}));
+
+						rows = json.map(r => Object.values(r));
+					}
+
+					$("#results-table").DataTable({
+						data: rows,
+						columns
+					});
+					
+					$("#results-text").hide();
+					$("#results-table").show();
+				} catch(e) {
+					console.info(e);
+
+					try {
+						let d2 = JSON.stringify(JSON.parse(data), null, 2);
+
+						$("#results-text").text(d2);
+					} catch(e) {
+						$("#results-text").text(data);
+					}
+
+					$("#results-text").show();
+					$("#results-table").hide();
+				}
+			});
+		}
+
+		window.editor.addKeyMap({
+			"Ctrl-Enter": () => Execute(),
+			"Ctrl-Delete": () => window.editor.getDoc().setValue(""),
+		});
+
+		$("#execute-query").on("click", function(e) {
+			Execute();
+		});
+	});
 </script>
