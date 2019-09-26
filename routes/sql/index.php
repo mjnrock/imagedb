@@ -4,9 +4,16 @@
 
 <div>
 	<div class="remark info">
-		<kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Execute query
-		<br />
-		<kbd>Ctrl</kbd> + <kbd>Delete</kbd> : Clear textarea
+		<div class="row">
+			<div class="cell">
+				<span>This currently only supports <span class="text-bold">one (1)</span> result set per execution</span>
+			</div>		
+			<div class="cell">		
+				<kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Execute query
+				<br />
+				<kbd>Ctrl</kbd> + <kbd>Delete</kbd> : Clear textarea
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -36,7 +43,7 @@
 
 	<div
 		id="results-holder"
-		class="mt-2"
+		class="mt-2 w-100"
 	>
 		<code
 			id="results-text"
